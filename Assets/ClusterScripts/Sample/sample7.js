@@ -11,7 +11,7 @@ $.onInteract((playerHandle) => {
   }
   // 残ったプレイヤーを対象のアイテムに渡す
   let pyui = $.worldItemReference("pyui");
-  pyui.send("set_visibility", players);
+  pyui.send("set_visible", players);
 });
 
 /*

@@ -30,7 +30,7 @@ $.onUpdate((dt) => {
     if (!!$.state.visibleChanegePlayer) {
       // 障害物が見えるようにする
       let obstacles = $.worldItemReference("obstacles");
-      obstacles.send("set_visibility", $.state.visibleChanegePlayer);
+      obstacles.send("set_visible", $.state.visibleChanegePlayer);
       // send したら次の send までインターバルを設ける
       $.state.sendInterval = 0.1;
       // 当たっていたプレイヤー情報は削除する
