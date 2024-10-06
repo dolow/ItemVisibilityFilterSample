@@ -1,4 +1,6 @@
+// 初期化処理を行う
 $.onStart(() => {
+  // 最初はすべてのプレイヤーが見えている状態にする
   let visiblePlayers = $.getPlayersNear($.getPosition(), Infinity);
   $.setVisiblePlayers(visiblePlayers);
 });
