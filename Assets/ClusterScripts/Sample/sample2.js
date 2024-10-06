@@ -3,5 +3,5 @@ $.onInteract((playerHandle) => {
   let bridge = $.worldItemReference("bridge");
 
   // 見えるようにしたいアイテムに触ったプレイヤーを渡す
-  bridge.send("set_visible", playerHandle);
+  bridge.send("set_visible", [playerHandle]);
 });

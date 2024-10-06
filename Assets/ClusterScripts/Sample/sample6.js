@@ -7,7 +7,7 @@ $.onInteract((playerHandle) => {
 
   // 対象のアイテムに抽出したプレイヤーを渡す
   let obstacles = $.worldItemReference("obstacles");
-  obstacles.send("set_visible", players[index]);
+  obstacles.send("set_visible", [players[index]]);
 });
 
 /*

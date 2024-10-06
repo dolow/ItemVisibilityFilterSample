@@ -3,7 +3,7 @@ $.onInteract((playerHandle) => {
   let bridge = $.worldItemReference("bridge");
 
   // 見えなくしたいアイテムに触ったプレイヤーを渡す
-  bridge.send("set_invisible", playerHandle);
+  bridge.send("set_invisible", [playerHandle]);
 });
 
 /*

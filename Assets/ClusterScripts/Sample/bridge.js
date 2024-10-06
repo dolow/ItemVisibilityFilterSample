@@ -11,10 +11,12 @@ $.onReceive((type, arg, sender) => {
 
   if (type === "set_invisible") { // 見えなくして欲しいという要求が来た場合
     // ステートに保存されている現在の可視性から渡されたプレイヤーを除外する
-    visiblePlayers = visiblePlayers.filter((player) => player.id !== arg.id);
+    for (let i = 0; i < arg.length; i++) {
+      visiblePlayers = visiblePlayers.filter((player) => player.id !== arg[i].id);
+    }
   } else if (type === "set_visible") {
     // ステートに保存されている現在の可視性に渡されたプレイヤーを追加する
-    visiblePlayers.push(arg);
+    visiblePlayers = visiblePlayers.concat(arg);
   }
 
   // 可視性を適用する
