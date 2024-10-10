@@ -279,6 +279,8 @@ GameObject:
   - component: {fileID: 553249906}
   - component: {fileID: 553249905}
   - component: {fileID: 553249904}
+  - component: {fileID: 553249909}
+  - component: {fileID: 553249908}
   m_Layer: 0
   m_Name: StaffOnlyButton
   m_TagString: Untagged
@@ -365,6 +367,36 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &553249908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 553249903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e61061896c654489a41575fc291bf4a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sourceCodeAsset: {fileID: 5022602860645237092, guid: d3fd18ce5c4b241cd8fa9dc719e08add, type: 3}
+  sourceCode: 
+--- !u!114 &553249909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 553249903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3977a5e65e72f4db4b85ddba10d48dd4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id:
+    value: 1916839802650382613
+  itemName: 
+  size: {x: 0, y: 0, z: 0}
 --- !u!1 &1033462657
 GameObject:
   m_ObjectHideFlags: 0
@@ -455,7 +487,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e61061896c654489a41575fc291bf4a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sourceCodeAsset: {fileID: 0}
+  sourceCodeAsset: {fileID: 5022602860645237092, guid: b8943ae7819d74fcea9b3f0b8769bd39, type: 3}
   sourceCode: 
 --- !u!114 &1042565021
 MonoBehaviour:
@@ -470,7 +502,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id:
-    value: 0
+    value: 8547775605585687108
   itemName: 
   size: {x: 0, y: 0, z: 0}
 --- !u!1 &1044661505
