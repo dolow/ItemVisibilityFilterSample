@@ -10,6 +10,11 @@ const messageId = Object.freeze({
   setEnable: "set_enable",
 });
 
+const pcxMessageId = Object.freeze({
+  updateScore: "update_score",
+  scoreItem: "score_item",
+});
+
 const errorType = Object.freeze({
   none: 0,
   retriable: 1,
@@ -39,9 +44,9 @@ function getSubNode(subNodeName) {
   return node
 }
 
-function trySend(itemHandle, id, message) {
+function trySend(handle, id, message) {
   try {
-    itemHandle.send(id, message);
+    handle.send(id, message);
   } catch (e) {
     $.log(`[${id}]${e}`);
     return (e.rateLimitExceeded)
@@ -94,9 +99,6 @@ const referenceId = Object.freeze({
   particleA: "particle_a",
   particleB: "particle_b",
   particleC: "particle_c",
-});
-const templateId = Object.freeze({
-  score: "score",
 });
 
 
@@ -237,13 +239,12 @@ $.onReceive((id, body, _) => {
     case messageId.giveup: clearChallenge(); break;
     case messageId.goal: {
       const challenger = $.state.challenger;
-      const scoreItem = $.createItem(new WorldItemTemplateId(templateId.score), challenger.getPosition(), challenger.getRotation());
-      
+
       $.state.sendQueue = $.state.sendQueue.concat([
         {
-          receiver: scoreItem,
-          id: messageId.setEnable,
-          body: { time: $.state.challengerTime, playerHandle: challenger },
+          receiver: $.state.challenger,
+          id: pcxMessageId.updateScore,
+          body: { time: $.state.challengerTime },
         },
         {
           receiver: getWorldItemReference(referenceId.particleA),

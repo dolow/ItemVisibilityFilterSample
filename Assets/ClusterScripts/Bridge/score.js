@@ -10,6 +10,11 @@ const messageId = Object.freeze({
   setEnable: "set_enable",
 });
 
+const pcxMessageId = Object.freeze({
+  updateScore: "update_score",
+  scoreItem: "score_item",
+});
+
 const errorType = Object.freeze({
   none: 0,
   retriable: 1,
@@ -39,9 +44,9 @@ function getSubNode(subNodeName) {
   return node
 }
 
-function trySend(itemHandle, id, message) {
+function trySend(handle, id, message) {
   try {
-    itemHandle.send(id, message);
+    handle.send(id, message);
   } catch (e) {
     $.log(`[${id}]${e}`);
     return (e.rateLimitExceeded)
@@ -54,19 +59,35 @@ function trySend(itemHandle, id, message) {
 // body
 
 const subNodeName = Object.freeze({
-  scoreText: "ScoreText",
+  lastScoreText: "LastScoreText",
+  highScoreText: "HighScoreText",
   achievementText: "AchievementText",
+
+  pull: "Pull",
+  lastScore: "LastScore",
+  achievement: "Achievement",
+  highScore: "HighScore",
 });
 
+const defaultAchievement = "ランナー";
+const achievements = {
+  10: "神",
+  30: "心眼ランナー",
+  60: "イキれるレベル",
+  90: "パイセンと呼べ",
+  120: "やりこみ勢",
+  180: "一人前",
+  240: "上を目指せる",
+};
+
 function getAchievement(time) {
-  if (time < 10.0)  return "神";
-  if (time < 30.0)  return "心眼ランナー";
-  if (time < 60.0)  return "イキっていいよ";
-  if (time < 90.0)  return "パイセンと呼べ";
-  if (time < 120.0) return "やりこみ勢";
-  if (time < 180.0) return "一人前";
-  if (time < 240.0) return "上を目指せる";
-  return "完走";
+  const keys = Object.keys(achievements);
+  for (let i = 0; i < keys.length; i++) {
+    if (time < parseInt(keys[i])) {
+      return achievements[keys[i]];
+    }
+  }
+  return defaultAchievement;
 }
 
 $.onStart(() => {
@@ -74,25 +95,46 @@ $.onStart(() => {
   $.state.timeReceived = false;
 });
 
+$.onInteract(ph => {
+  const pull = getSubNode(subNodeName.pull);
+  const folded = pull.getEnabled();
+  pull.setEnabled(!folded);
+  getSubNode(subNodeName.lastScore).setEnabled(folded);
+  getSubNode(subNodeName.highScore).setEnabled(folded);
+  getSubNode(subNodeName.achievement).setEnabled(folded);
+});
+
 /**
  * schema
- * any = {
+ * setEnable = {
  *   time: number;
  *   playerHandle: PlayerHandle;
  * }
+ * updateScore = {
+ *   highScore: number;
+ *   lastScore: number;
+ * }
  */
 $.onReceive((id, body, _) => {
-  if (!body.time) {
-    return;
-  }
+  switch (id) {
+    case messageId.setEnable: {
+      $.state.player = body.playerHandle;
+      $.state.timeReceived = true;
 
-  const achievement = getAchievement(body.time);
-  const timeText = (body.time >= 1000) ? "999.0+" : body.time.toFixed(2); 
-  getSubNode(subNodeName.scoreText).setText(timeText);
-  getSubNode(subNodeName.achievementText).setText(achievement);
-  $.state.player = body.playerHandle;
-  $.state.timeReceived = true;
-});
+      body.playerHandle.send(pcxMessageId.updateScore, { time: body.time });
+      break;
+    }
+    case pcxMessageId.updateScore: {
+      const achievement = getAchievement(body.highScore);
+      const lastScoreText = (body.lastScore >= 1000) ? "999.0+" : body.lastScore.toFixed(2);
+      const highScoreText = (body.highScore >= 1000) ? "999.0+" : body.highScore.toFixed(2);
+      getSubNode(subNodeName.lastScoreText).setText(lastScoreText);
+      getSubNode(subNodeName.highScoreText).setText(highScoreText);
+      getSubNode(subNodeName.achievementText).setText(achievement);
+      break;
+    }
+  }
+}, { item: true, player: true });
 
 $.onUpdate(dt => {
   if (!$.state.timeReceived) {

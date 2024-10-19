@@ -23,6 +23,7 @@ $.onUpdate(dt => {
   if ($.state.playTime < 0) {
     return;
   }
+  
   const playTime = $.state.playTime + dt;
   if (playTime >= maxPlayTime) {
     $.state.playTime = -1;

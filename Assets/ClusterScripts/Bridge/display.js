@@ -10,6 +10,11 @@ const messageId = Object.freeze({
   setEnable: "set_enable",
 });
 
+const pcxMessageId = Object.freeze({
+  updateScore: "update_score",
+  scoreItem: "score_item",
+});
+
 const errorType = Object.freeze({
   none: 0,
   retriable: 1,
@@ -39,9 +44,9 @@ function getSubNode(subNodeName) {
   return node
 }
 
-function trySend(itemHandle, id, message) {
+function trySend(handle, id, message) {
   try {
-    itemHandle.send(id, message);
+    handle.send(id, message);
   } catch (e) {
     $.log(`[${id}]${e}`);
     return (e.rateLimitExceeded)
