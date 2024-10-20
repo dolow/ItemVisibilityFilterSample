@@ -181,6 +181,11 @@ function clearChallenge() {
 
   $.state.sendQueue = $.state.sendQueue.concat([
     {
+      receiver: getWorldItemReference(referenceId.bars),
+      id: messageId.setEnable,
+      body: { barState: barState.wait }
+    },
+    {
       receiver: getWorldItemReference(referenceId.display),
       id: messageId.setText,
       body: { textState: textState.start }
@@ -287,14 +292,14 @@ $.onInteract((playerHandle) => {
 
   const queue = $.state.sendQueue.concat([
     {
-      receiver: getWorldItemReference(referenceId.display),
-      id: messageId.setText,
-      body: { textState: textState.challenging }
-    },
-    {
       receiver: getWorldItemReference(referenceId.bars),
       id: messageId.setEnable,
       body: { barState: barState.wait }
+    },
+    {
+      receiver: getWorldItemReference(referenceId.display),
+      id: messageId.setText,
+      body: { textState: textState.challenging }
     },
     {
       receiver: getWorldItemReference(referenceId.audioIdle),

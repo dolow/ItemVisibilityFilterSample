@@ -98,7 +98,14 @@ $.onUpdate((dt) => {
 
     for (let i = 0; i < overlaps.length; i++) {
       if (overlaps[i].object.playerHandle) {
-        overlaps[i].object.playerHandle.setPosition(spawnPosition);
+        try {
+          overlaps[i].object.playerHandle.setPosition(spawnPosition);
+        } catch (e) {
+          if (!e.rateLimitExceeded) {
+            throw e;
+          }
+          // ignore rate limit
+        }
         break;
       }
     }

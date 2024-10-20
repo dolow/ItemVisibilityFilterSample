@@ -88,6 +88,7 @@ $.onReceive((id, body, _) => {
         case barState.go: {
           getSubNode(subNodeName.goBar).setEnabled(true);
           getSubNode(subNodeName.waitBar).setEnabled(false);
+          $.getUnityComponent("AudioSource").play();
           break;
         }
         case barState.wait: {
