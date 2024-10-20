@@ -66,8 +66,8 @@ const textState = Object.freeze({
 
 const texts = Object.freeze({
   preparing: "Preparing...",
-  start: "Start Challenge",
-  challenging: "Challenging",
+  start: "Start",
+  challenging: "Challenging...",
 });
 
 const subNodeName = Object.freeze({
