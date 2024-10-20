@@ -2,7 +2,7 @@
 const DEBUG = false;
 
 const messageId = Object.freeze({
-  stepInitialize: "step_initialize",
+  stepUpdate: "step_update",
   goal: "goal",
   giveup: "giveup",
   getChallengerSpawnPosition: "get_challenger_spawn_position",
@@ -74,7 +74,6 @@ const subNodeName = Object.freeze({
  * schema
  * setEnable = {
  *   barState: barState;
- *   wait: bool;
  * }
  */
 $.onReceive((id, body, _) => {

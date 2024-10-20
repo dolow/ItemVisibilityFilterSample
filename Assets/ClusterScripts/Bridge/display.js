@@ -2,7 +2,7 @@
 const DEBUG = false;
 
 const messageId = Object.freeze({
-  stepInitialize: "step_initialize",
+  stepUpdate: "step_update",
   goal: "goal",
   giveup: "giveup",
   getChallengerSpawnPosition: "get_challenger_spawn_position",
@@ -84,9 +84,9 @@ $.onReceive((id, body, _) => {
   if (id === messageId.setText) {
     const node = getSubNode(subNodeName.text);
     switch (body.textState) {
-      case texts.preparing:   node.setText(texts.preparing);   break;
-      case texts.start:       node.setText(texts.start);       break;
-      case texts.challenging: node.setText(texts.challenging); break;
+      case textState.preparing:   node.setText(texts.preparing);   break;
+      case textState.start:       node.setText(texts.start);       break;
+      case textState.challenging: node.setText(texts.challenging); break;
     }
   }
 });

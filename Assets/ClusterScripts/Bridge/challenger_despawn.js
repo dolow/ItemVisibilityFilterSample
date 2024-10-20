@@ -2,7 +2,7 @@
 const DEBUG = false;
 
 const messageId = Object.freeze({
-  stepInitialize: "step_initialize",
+  stepUpdate: "step_update",
   goal: "goal",
   giveup: "giveup",
   getChallengerSpawnPosition: "get_challenger_spawn_position",
@@ -80,9 +80,7 @@ $.onReceive((id, body, sender) => {
           $.state.sendRetry = {
             id: messageId.getChallengerSpawnPosition,
             receiver: sender,
-            body: {
-              spawnPosition,
-            }
+            body: { spawnPosition }
           };
           break;
         }
@@ -101,6 +99,7 @@ $.onUpdate((dt) => {
     for (let i = 0; i < overlaps.length; i++) {
       if (overlaps[i].object.playerHandle) {
         overlaps[i].object.playerHandle.setPosition(spawnPosition);
+        break;
       }
     }
   }

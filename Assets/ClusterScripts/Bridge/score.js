@@ -2,7 +2,7 @@
 const DEBUG = false;
 
 const messageId = Object.freeze({
-  stepInitialize: "step_initialize",
+  stepUpdate: "step_update",
   goal: "goal",
   giveup: "giveup",
   getChallengerSpawnPosition: "get_challenger_spawn_position",
@@ -146,10 +146,15 @@ $.onUpdate(dt => {
     return;
   }
 
-  const pos = player.getHumanoidBonePosition(HumanoidBone.Head).add(new Vector3(0, 0.5, 0));
+  const headPos = player.getHumanoidBonePosition(HumanoidBone.Head);
+  if (!headPos) {
+    // avatar not loaded
+    return;
+  }
+  
+  const pos = headPos.add(new Vector3(0, 0.5, 0));
   const playerEuler = player.getRotation().createEulerAngles();
-  const euler = $.getRotation().createEulerAngles();
   
   $.setPosition(pos);
-  $.setRotation(new Quaternion().setFromEulerAngles(new Vector3(euler.x, (playerEuler.y + 180) % 360, euler.z)));
+  $.setRotation(new Quaternion().setFromEulerAngles(new Vector3(0, (playerEuler.y + 180) % 360, 0)));
 });

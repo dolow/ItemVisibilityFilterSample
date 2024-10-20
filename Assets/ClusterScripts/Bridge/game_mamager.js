@@ -1,8 +1,8 @@
 // shared module
-const DEBUG = true;
+const DEBUG = false;
 
 const messageId = Object.freeze({
-  stepInitialize: "step_initialize",
+  stepUpdate: "step_update",
   goal: "goal",
   giveup: "giveup",
   getChallengerSpawnPosition: "get_challenger_spawn_position",
@@ -82,11 +82,6 @@ const barState = Object.freeze({
   wait: 3,
 });
 
-const texts = Object.freeze({
-  preparing: "Preparing...",
-  start: "Start Challenge",
-  challenging: "Challenging",
-});
 const referenceId = Object.freeze({
   initiator: "initiator",
   goal: "goal",
@@ -101,6 +96,9 @@ const referenceId = Object.freeze({
   particleC: "particle_c",
 });
 
+const templateId = Object.freeze({
+  score: "score",
+});
 
 function stepReferenceName(row, col) {
   return `step_${row}_${col}`;
@@ -204,6 +202,7 @@ $.onStart(() => {
   $.state.challenger = null;
   $.state.challengerWait = -1;
   $.state.challengerTime = 0.0;
+  $.state.initializedPlayers = [];
   $.state.elapsedSec = 0;
   $.state.challengerSpawnPoint = new Vector3(0, 0, 0);
   
@@ -286,7 +285,7 @@ $.onInteract((playerHandle) => {
 
   $.getUnityComponent("AudioSource").play();
 
-  $.state.sendQueue = $.state.sendQueue.concat([
+  const queue = $.state.sendQueue.concat([
     {
       receiver: getWorldItemReference(referenceId.display),
       id: messageId.setText,
@@ -308,6 +307,24 @@ $.onInteract((playerHandle) => {
       body: { play: true }
     },
   ]);
+
+  if ($.state.initializedPlayers.indexOf(playerHandle.id) === -1) {
+    $.setPlayerScript(playerHandle);
+    const scoreItem = $.createItem(new WorldItemTemplateId(templateId.score), playerHandle.getPosition().add(new Vector3(0, 5, 0)), playerHandle.getRotation());
+    queue.push({
+      receiver: playerHandle,
+      id: pcxMessageId.scoreItem,
+      body: { scoreItem }
+    });
+    queue.push({
+      receiver: scoreItem,
+      id: messageId.setEnable,
+      body: { time: 0, playerHandle }
+    });
+    $.state.initializedPlayers = $.state.initializedPlayers.concat([playerHandle.id]);
+  }
+
+  $.state.sendQueue = queue;
 });
 
 
@@ -355,10 +372,7 @@ $.onUpdate((dt) => {
       break UpdateStep;
     }
 
-    if (!challenger) {
-      break UpdateStep;
-    }
-    if (!challenger.exists()) {
+    if (challenger && !challenger.exists()) {
       clearChallenge();
       break UpdateStep;
     }
@@ -388,19 +402,21 @@ $.onUpdate((dt) => {
 
     const stepTypes = $.state.stepTypes;
     let type = stepTypes[row][col];
+    let initialize = false;
     if (type === stepType.unknown) {
+      initialize = true;
       type = enabled ? randomStepType() : stepType.normal;
       stepTypes[row][col] = type;
       $.state.stepTypes = stepTypes;
     }
 
-    const message = { type, visiblePlayers, enabled };
+    const message = { type, visiblePlayers, enabled, initialize };
 
     if (DEBUG) {
       message.visiblePlayers = players;
     }
 
-    const error = trySend(step, messageId.stepInitialize, message);
+    const error = trySend(step, messageId.stepUpdate, message);
     switch (error) {
       case errorType.none:        break;
       case errorType.retriable:   break UpdateStep;

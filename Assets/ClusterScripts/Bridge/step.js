@@ -2,7 +2,7 @@
 const DEBUG = false;
 
 const messageId = Object.freeze({
-  stepInitialize: "step_initialize",
+  stepUpdate: "step_update",
   goal: "goal",
   giveup: "giveup",
   getChallengerSpawnPosition: "get_challenger_spawn_position",
@@ -59,12 +59,14 @@ function trySend(handle, id, message) {
 // body
 
 const moveLimit = 2.0;
-const moveRatePerSec = 1.0;
-const rotateDegreePerSec = 120;
-const stepInstanceSubNodeName = "Instance";
+const maxMoveRatePerSec = 1.0;
+const maxRotateDegreePerSec = 120;
+const subNodeName = Object.freeze({
+  stepInstance: "Instance",
+})
 
 $.onStart(() => {
-  const node = getSubNode(stepInstanceSubNodeName);
+  const node = getSubNode(subNodeName.stepInstance);
   const pos = node.getPosition();
   $.state.rootInitialTransform = {  
     position: $.getPosition(),
@@ -79,20 +81,24 @@ $.onStart(() => {
   $.state.type = stepType.normal;
   $.state.moveDirection = 1;
   $.state.moveRate = 0.0;
+
+  $.state.moveSpeed = 0.0;
+  $.state.rotateSpeed = 0.0;
 });
 
 /**
  * schema
- * stepInitialize = {
+ * stepUpdate = {
  *   enabled: bool;
  *   visiblePlayers: PlayerHandle[];
  *   type: stepType;
+ *   initialize: bool;
  * }
  */
 $.onReceive((id, body, sender) => {
   switch (id) {
-    case messageId.stepInitialize: {
-      const node = getSubNode(stepInstanceSubNodeName);
+    case messageId.stepUpdate: {
+      const node = getSubNode(subNodeName.stepInstance);
 
       node.setPosition($.state.subNodeInitialTransform.position);
       node.setRotation($.state.subNodeInitialTransform.rotation);
@@ -102,6 +108,11 @@ $.onReceive((id, body, sender) => {
       $.state.type = type;
       if (enabled) {
         $.setVisiblePlayers(visiblePlayers);
+        if (body.initialize) {
+          const direction = (Math.floor(Math.random() * 100) % 2 === 0) ? 1 : -1;
+          $.state.moveSpeed = (maxMoveRatePerSec / 2) + (Math.random() * maxMoveRatePerSec / 2) * direction;
+          $.state.rotateSpeed = (maxRotateDegreePerSec / 2) + (Math.random() * maxRotateDegreePerSec / 2) * direction;
+        }
       }
       break;
     }
@@ -112,7 +123,7 @@ $.onUpdate(dt => {
   $.setPosition($.state.rootInitialTransform.position);
   $.setRotation($.state.rootInitialTransform.rotation);
   
-  const node = getSubNode(stepInstanceSubNodeName);
+  const node = getSubNode(subNodeName.stepInstance);
   if (!node.getEnabled()) {
     return;
   }
@@ -121,8 +132,8 @@ $.onUpdate(dt => {
     case stepType.normal: return;
     case stepType.move: {
       const newRate = ($.state.moveDirection > 0)
-        ? Math.min($.state.moveRate + moveRatePerSec * dt, 1.0)
-        : Math.max($.state.moveRate - moveRatePerSec * dt, -1.0);
+        ? Math.min($.state.moveRate + $.state.moveSpeed * dt, 1.0)
+        : Math.max($.state.moveRate - $.state.moveSpeed * dt, -1.0);
 
       if (newRate >= 1.0) {
         $.state.moveDirection = -1;
@@ -141,7 +152,7 @@ $.onUpdate(dt => {
     }
     case stepType.rotate: {
       const euler = node.getRotation().createEulerAngles();
-      const newY = (euler.y + (rotateDegreePerSec * dt)) % 360;
+      const newY = (euler.y + ($.state.rotateSpeed * dt)) % 360;
       node.setRotation(new Quaternion().setFromEulerAngles(new Vector3(euler.x, newY, euler.z)));
       break;
     }
