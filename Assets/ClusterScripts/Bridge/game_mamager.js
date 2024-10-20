@@ -277,7 +277,7 @@ $.onInteract((playerHandle) => {
   $.state.stepTypes = new Array(BRIDGE_ROWS).fill(new Array(BRIDGE_COLS).fill(stepType.unknown));
   $.state.challenger = playerHandle;
   $.state.updateStep = { row: 0, col: 0 };
-  $.state.challengerWait = (BRIDGE_ROWS * BRIDGE_COLS * STEP_UPDATE_INTERVAL_SEC) / 2;
+  $.state.challengerWait = (BRIDGE_ROWS * BRIDGE_COLS * STEP_UPDATE_INTERVAL_SEC) / 4 * 3;
 
   // Move challenger to his spawn point
   playerHandle.setPosition($.state.challengerSpawnPoint);
